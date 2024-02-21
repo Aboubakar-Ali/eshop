@@ -7,7 +7,8 @@ const productSchema = mongoose.Schema({
   fournisseur: { type: String, required: true },
   stock: { type: Number, required: true },
   images: [String],
-  note: { type: Number, default: 0 }
+  note: { type: Number, default: 0 },
+  categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true } // Ajout d'une référence à Category
 });
 
 module.exports = mongoose.model('Product', productSchema);

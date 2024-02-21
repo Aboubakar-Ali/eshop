@@ -6,23 +6,33 @@ const Review = require('./models/Review');
 const Category = require('./models/Category');
 const Order = require('./models/Order');
 
-mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URL)
   .then(() => {
     console.log('Connexion à MongoDB réussie.');
     insererDonneesFictives();
   })
   .catch(err => console.error('Échec de connexion à MongoDB', err));
 
-  function insererDonneesFictives() {
+function insererDonneesFictives() {
+  // Insérez d'abord la catégorie
+  const category = new Category({
+    nom: "Tenis",
+    description: "Avec des Tenis de qualité."
+  });
+
+  category.save().then((savedCategory) => {
+    console.log('Catégorie insérée', savedCategory);
+
+    // Ensuite, insérez l'utilisateur
     const user = new User({
       name: "Abdel London",
       nbrDeProduitAcheter: 5
     });
-  
+
     user.save().then((savedUser) => {
       console.log('Utilisateur inséré', savedUser);
   
-      // produit
+      // Puis, insérez le produit avec l'ID de la catégorie
       const product = new Product({
         nom: "Tn Adidas",
         description: "Tn Adidas Bleu et Blan.",
@@ -30,13 +40,14 @@ mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopol
         fournisseur: "Adidas",
         stock: 100,
         images: ["/images/tn.jpg"],
-        note: 4
+        note: 4,
+        categoryId: savedCategory._id // Utilisez l'ID de la catégorie sauvegardée
       });
   
       product.save().then((savedProduct) => {
         console.log('Produit inséré', savedProduct);
   
-        // Review
+        // Insérez ensuite l'avis
         const review = new Review({
           produitId: savedProduct._id,
           userId: savedUser._id,
@@ -46,24 +57,15 @@ mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopol
   
         review.save().then(() => console.log('Avis inséré'));
   
-        // Order
+        // Et enfin, insérez la commande
         const order = new Order({
           userId: savedUser._id,
           produits: [{ produitId: savedProduct._id, quantite: 3 }],
-          total: 300
+          total: 450 // Corrigé pour correspondre au total attendu (150 * 3)
         });
   
         order.save().then(() => console.log('Commande insérée'));
       });
     });
-  
-    // Catégory
-    const category = new Category({
-      nom: "Tenis",
-      description: "Avec des Tenis de qualité."
-    });
-  
-    category.save().then(() => console.log('Catégorie insérée'));
-
-  }
-  
+  }).catch(err => console.error('Erreur lors de l\'insertion:', err));
+}
