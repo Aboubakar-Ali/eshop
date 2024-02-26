@@ -7,7 +7,7 @@ const orderSchema = mongoose.Schema({
     quantite: { type: Number, required: true }
   }],
   dateCommande: { type: Date, default: Date.now },
-  statut: { type: String, required: true, default: 'en attente' }, // Les statuts peuvent être 'en attente', 'expédiée', 'livrée', etc.
+  statut: { type: String, required: true, default: 'en attente' }, //  'en attente', 'expédiée', 'livrée'.
   total: { type: Number, required: true }
 });
 

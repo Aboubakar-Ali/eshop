@@ -5,7 +5,7 @@ const app = express();
 
 app.use(express.json()); 
 
-// Connexion à MongoDB
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('Connexion à MongoDB réussie.'))
   .catch(err => console.error('Échec de connexion à MongoDB', err));

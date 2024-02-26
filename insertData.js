@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGO_URL)
   .catch(err => console.error('Échec de connexion à MongoDB', err));
 
 function insererDonneesFictives() {
-  // Insérez d'abord la catégorie
+  // Insert category first
   const category = new Category({
     nom: "Tenis",
     description: "Avec des Tenis de qualité."
@@ -23,7 +23,7 @@ function insererDonneesFictives() {
   category.save().then((savedCategory) => {
     console.log('Catégorie insérée', savedCategory);
 
-    // Ensuite, insérez l'utilisateur
+    // Insert user 
     const user = new User({
       name: "Abdel London",
       nbrDeProduitAcheter: 5
@@ -32,7 +32,7 @@ function insererDonneesFictives() {
     user.save().then((savedUser) => {
       console.log('Utilisateur inséré', savedUser);
   
-      // Puis, insérez le produit avec l'ID de la catégorie
+      // Insert product witch categorie ID 
       const product = new Product({
         nom: "Tn Adidas",
         description: "Tn Adidas Bleu et Blan.",
@@ -41,7 +41,7 @@ function insererDonneesFictives() {
         stock: 100,
         images: ["/images/tn.jpg"],
         note: 4,
-        categoryId: savedCategory._id // Utilisez l'ID de la catégorie sauvegardée
+        categoryId: savedCategory._id // used saved categorie ID
       });
   
       product.save().then((savedProduct) => {
@@ -57,11 +57,11 @@ function insererDonneesFictives() {
   
         review.save().then(() => console.log('Avis inséré'));
   
-        // Et enfin, insérez la commande
+        //Insert order
         const order = new Order({
           userId: savedUser._id,
           produits: [{ produitId: savedProduct._id, quantite: 3 }],
-          total: 450 // Corrigé pour correspondre au total attendu (150 * 3)
+          total: 450 
         });
   
         order.save().then(() => console.log('Commande insérée'));
