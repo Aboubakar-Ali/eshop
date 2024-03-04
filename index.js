@@ -14,6 +14,18 @@ mongoose.connect(process.env.MONGO_URL)
 const productRoutes = require('./routes/products');
 app.use('/api/products', productRoutes);
 
+const categoryRoutes = require('./routes/categories');
+app.use('/api/categories', categoryRoutes);
+
+const ordersRoutes = require('./routes/orders');
+app.use('/api/orders', ordersRoutes);
+
+const UsersRoutes = require('./routes/users');
+app.use('/api/users', UsersRoutes);
+
+const reviewRoutes = require('./routes/review');
+app.use('/api/reviews', reviewRoutes);
+
 app.get('/', (req, res) => {
   res.send('Le serveur est opérationnel !');
 });
