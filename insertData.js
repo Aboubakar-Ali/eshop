@@ -13,59 +13,68 @@ mongoose.connect(process.env.MONGO_URL)
   })
   .catch(err => console.error('Échec de connexion à MongoDB', err));
 
-function insererDonneesFictives() {
-  // Insert category first
-  const category = new Category({
-    nom: "Tenis",
-    description: "Avec des Tenis de qualité."
-  });
+async function insererDonneesFictives() {
+  try {
+    // Insert categories
+    const categoriesData = ["Tenis", "Basket", "Airforce", "Jordan"].map(categoryName => ({
+      nom: categoryName,
+      description: `Description pour ${categoryName}.`
+    }));
+    const savedCategories = await Category.insertMany(categoriesData);
+    console.log('Catégories insérées', savedCategories);
 
-  category.save().then((savedCategory) => {
-    console.log('Catégorie insérée', savedCategory);
+    // Define suppliers
+    const fournisseurs = ["adidas", "nike", "noctar", "jordan", "vans"];
 
-    // Insert user 
-    const user = new User({
-      name: "Abdel London",
-      nbrDeProduitAcheter: 5
-    });
+    for (let i = 1; i <= 10; i++) {
+      // Insert user
+      const user = new User({
+        name: `User ${i}`,
+        nbrDeProduitAcheter: Math.floor(Math.random() * 10)
+      });
+      const savedUser = await user.save();
+      console.log(`Utilisateur ${i} inséré`, savedUser);
 
-    user.save().then((savedUser) => {
-      console.log('Utilisateur inséré', savedUser);
-  
-      // Insert product witch categorie ID 
+      // Randomly select a category and a supplier for the product
+      const randomCategoryIndex = Math.floor(Math.random() * savedCategories.length);
+      const selectedCategory = savedCategories[randomCategoryIndex];
+      const randomSupplierIndex = Math.floor(Math.random() * fournisseurs.length);
+      const selectedSupplier = fournisseurs[randomSupplierIndex];
+
+      // Insert product with randomly selected category ID and supplier
       const product = new Product({
-        nom: "Tn Adidas",
-        description: "Tn Adidas Bleu et Blan.",
-        prix: 150,
-        fournisseur: "Adidas",
-        stock: 100,
-        images: ["/images/tn.jpg"],
-        note: 4,
-        categoryId: savedCategory._id // used saved categorie ID
+        nom: `Product ${i}`,
+        description: `Description for product ${i}.`,
+        prix: Math.floor(Math.random() * 100) + 50,
+        fournisseur: selectedSupplier,
+        stock: Math.floor(Math.random() * 50) + 1,
+        images: [`/images/product${i}.jpg`],
+        note: Math.floor(Math.random() * 5) + 1,
+        categoryId: selectedCategory._id
       });
+      const savedProduct = await product.save();
+      console.log(`Produit ${i} inséré`, savedProduct);
   
-      product.save().then((savedProduct) => {
-        console.log('Produit inséré', savedProduct);
-  
-        // Insérez ensuite l'avis
-        const review = new Review({
-          produitId: savedProduct._id,
-          userId: savedUser._id,
-          note: 5,
-          commentaire: "Excellent produit !"
-        });
-  
-        review.save().then(() => console.log('Avis inséré'));
-  
-        //Insert order
-        const order = new Order({
-          userId: savedUser._id,
-          produits: [{ produitId: savedProduct._id, quantite: 3 }],
-          total: 450 
-        });
-  
-        order.save().then(() => console.log('Commande insérée'));
+      // Insert review
+      const review = new Review({
+        produitId: savedProduct._id,
+        userId: savedUser._id,
+        note: Math.floor(Math.random() * 5) + 1,
+        commentaire: `Commentaire pour le produit ${i}.`
       });
-    });
-  }).catch(err => console.error('Erreur lors de l\'insertion:', err));
+      await review.save();
+      console.log(`Avis ${i} inséré`);
+  
+      // Insert order
+      const order = new Order({
+        userId: savedUser._id,
+        produits: [{ produitId: savedProduct._id, quantite: Math.floor(Math.random() * 5) + 1 }],
+        total: savedProduct.prix * (Math.floor(Math.random() * 5) + 1)
+      });
+      await order.save();
+      console.log(`Commande ${i} insérée`);
+    }
+  } catch (err) {
+    console.error('Erreur lors de l\'insertion:', err);
+  }
 }
