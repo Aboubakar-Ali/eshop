@@ -1,4 +1,4 @@
-#  e-commerce
+#  eshop 
 
 ## Overview
 For us, we are going to set up an e-commerce site, first, we will set up our API(server party) and then our customer part!
